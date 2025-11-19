@@ -1,0 +1,5 @@
+prefect
+pymongo
+python-dotenv
+requests
+
