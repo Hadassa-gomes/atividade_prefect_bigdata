@@ -2,9 +2,6 @@ from prefect import flow, task, get_run_logger
 from src.extract import Extract
 from src.load import Load
 
-
-
-
 @task(retries=3, retry_delay_seconds=10)
 def extract_task(country: str):
     logger = get_run_logger()
@@ -14,7 +11,7 @@ def extract_task(country: str):
     return data
 
 @task
-def load_data(universities, db_name: str, collection_name: str):
+def load_task(universities, db_name: str, collection_name: str):
     logger = get_run_logger()
     loader = Load()
     loader.load_data_atlas(universities, db_name, collection_name)
@@ -22,9 +19,8 @@ def load_data(universities, db_name: str, collection_name: str):
 
 @flow(name="ETL Universities Prefect", log_prints=True)
 def etl_universities_flow(country: str = "Brazil"):
-    # 👉 agora country está definido e funciona
     data = extract_task(country)
-    load_data(data, "universidades", "universidades_brazil")
+    load_task(data, "universidades", "universidades_brazil")
 
 if __name__ == "__main__":
     etl_universities_flow()

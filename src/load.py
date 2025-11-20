@@ -1,23 +1,26 @@
+# load.py
+from pymongo import MongoClient
 import os
-from pymongo import MongoClient
 from dotenv import load_dotenv
-from pymongo import MongoClient
 
-
-load_dotenv()
+load_dotenv()  # carrega variáveis do .env
 
 class Load:
-    def load_data_atlas(self, universities, db_name: str, collection_name: str):
-        client = MongoClient(os.getenv("MONGO_URI"))
-        db = client[db_name]
-        collection = db[collection_name]
-        collection.insert_many(universities)
+    def __init__(self):
+        # Conecta ao MongoDB Atlas usando a URI do .env
+        self.client = MongoClient(os.getenv("MONGO_URI"))
 
-class Loader:
-    def __init__(self, uri):
-        self.client = MongoClient(uri)
+    def load_data_atlas(self, data, db_name, collection_name):
+        """
+        Insere uma lista de dicionários 'data' na coleção especificada.
+        """
+        db = self.client[db_name]  # seleciona o banco
+        collection = db[collection_name]  # seleciona a coleção
+        if data:  # só insere se houver dados
+            collection.insert_many(data)
+            print(f"{len(data)} registros inseridos em {db_name}.{collection_name}")
+        else:
+            print("Nenhum dado para inserir.")
 
-    def load_data_atlas(self, universities, db_name, collection_name):
-        db = self.client[db_name]
-        collection = db[collection_name]
-        collection.insert_many(universities)
+
+
